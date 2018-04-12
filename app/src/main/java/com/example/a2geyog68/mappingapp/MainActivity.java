@@ -20,6 +20,11 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 // test
@@ -42,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         /**this is for the map view*/
         setContentView(R.layout.activity_main);
 
-        setContentView(R.layout.activity_main);
 
         mv = (MapView) findViewById(R.id.map1);
 
@@ -62,21 +66,62 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
 
         /**this is for the location manager */
-        LocationManager mgr= (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
-                // if you want to test indoors change gps_provider to network_provider (everything in caps)
+        LocationManager mgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        // if you want to test indoors change gps_provider to network_provider (everything in caps)
 
         /**this is for the preference menu*/
         Configuration.getInstance().load
-                (this,PreferenceManager.getDefaultSharedPreferences (this));
+                (this, PreferenceManager.getDefaultSharedPreferences(this));
 
 
+        // file i/o array list
+        String line;
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader("poi.txt"));
 
+            while ((line = reader.readLine()) != null)
+
+            {
+                // this will split the array list.
+                String[] components = line.split(",");
+                if (components.length == 4)
+
+                {
+
+                    try {
+
+                        double lat = Double.parseDouble(components[4]);
+                        double lon = Double.parseDouble(components[3]);
+                        OverlayItem overlayItem = new OverlayItem(components[0], components[2], new GeoPoint(lat, lon));
+                        items.addItem(overlayItem);
+
+
+                    } catch (NumberFormatException e) {
+
+                        System.out.println(" error parse file" + e);
+
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                }
+            }
+        }
     }
 
 
     // adding a new method to inflate the string XML
-    public boolean onCreateOptionsMenu (Menu menu)
+    public boolean onCreateOptionsMenu(Menu menu)
 
     {
         MenuInflater inflater = getMenuInflater();
@@ -86,81 +131,80 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
 
-    /** choosing the different map views*/
-    public boolean onOptionsItemSelected (MenuItem item)
-    {
+    /**
+     * choosing the different map views
+     */
+    public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == R.id.choosemap)
 
         {
             Intent intent = new Intent(this, MapChooseActivity.class);
-                    startActivityForResult(intent, 0);
+            startActivityForResult(intent, 0);
             return true;
         }
 
         return false;
     }
 
-    public void onActivityResult (int requestCode, int resultCode, Intent returnIntent)
+    public void onActivityResult(int requestCode, int resultCode, Intent returnIntent)
 
     {
-        if (resultCode == RESULT_OK)
-        {
+        if (resultCode == RESULT_OK) {
             if (requestCode == 0) //mapChooseActivity returning it's intent
             {
                 Bundle bundle = returnIntent.getExtras();
                 boolean hikebike = bundle.getBoolean("com.example.gisylia_g.mappingapp.hikebike");
 
-                if (hikebike == true)
-                {
+                if (hikebike == true) {
                     mv.setTileSource(TileSourceFactory.HIKEBIKEMAP);
-                }
-
-                else
-                {
+                } else {
                     mv.setTileSource(TileSourceFactory.MAPNIK);
                 }
             }
         }
     }
 
-/** when the location changes */
+    /**
+     * when the location changes
+     */
     public void onLocationChanged(Location newLoc) // new lock represents your current gps location
     {
         Toast.makeText
                 (this, "Location= " +
-                        newLoc.getLatitude()+ "" +
+                        newLoc.getLatitude() + "" +
                         newLoc.getLongitude(), Toast.LENGTH_LONG).show();
 
-        mv.getController().setCenter(new GeoPoint( newLoc.getLatitude() ,newLoc.getLongitude() ));
+        mv.getController().setCenter(new GeoPoint(newLoc.getLatitude(), newLoc.getLongitude()));
 
     }
 
-    /** when the location is disabled*/
-    public void onProviderDisabled(String provider)
-   {
+    /**
+     * when the location is disabled
+     */
+    public void onProviderDisabled(String provider) {
         Toast.makeText(this, "Provider" +
                         provider + "disabled",
-                        Toast.LENGTH_LONG).show();
-   }
+                Toast.LENGTH_LONG).show();
+    }
 
 
-    /**when the location is enabled */
-    public void onProviderEnabled (String provider)
-    {
+    /**
+     * when the location is enabled
+     */
+    public void onProviderEnabled(String provider) {
         Toast.makeText(this, "Provider" +
                         provider + "enabled",
                 Toast.LENGTH_LONG).show();
     }
 
-    /**when the location changes a status update*/
-    public void onStatusChanged(String provider, int status, Bundle extras)
-    {
+    /**
+     * when the location changes a status update
+     */
+    public void onStatusChanged(String provider, int status, Bundle extras) {
         Toast.makeText(this, "Status changed:" +
                         status,
                 Toast.LENGTH_LONG).show();
-
-
 
 
     }
