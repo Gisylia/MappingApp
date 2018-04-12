@@ -83,14 +83,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         try {
             String filepath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/poi.txt";
             File file = new File(filepath);
-            reader = new BufferedReader(new FileReader("poi.txt"));
+            System.out.println();
+            reader = new BufferedReader(new FileReader(filepath));
 
             while ((line = reader.readLine()) != null)
 
             {
                 // this will split the array list.
                 String[] components = line.split(",");
-                if (components.length == 4)
+                if (components.length == 5)
 
                 {
 
