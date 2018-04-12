@@ -87,16 +87,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             reader = new BufferedReader(new FileReader(filepath));
 
             while ((line = reader.readLine()) != null)
-
             {
                 // this will split the array list.
                 String[] components = line.split(",");
                 if (components.length == 5)
-
                 {
-
                     try {
-
                         double lat = Double.parseDouble(components[4]);
                         double lon = Double.parseDouble(components[3]);
                         OverlayItem overlayItem = new OverlayItem(components[0], components[2], new GeoPoint(lon, lat));
@@ -105,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                     } catch (NumberFormatException e) {
 
-                        System.out.println(" error parse file" + e);
+                        System.out.println(" error parsing file" + e);
 
                     }
                 }
@@ -122,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 }
             }
         }
+        mv.getOverlays().add(items);
     }
 
 
