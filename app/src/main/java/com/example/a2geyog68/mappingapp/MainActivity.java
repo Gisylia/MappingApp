@@ -22,6 +22,7 @@ import org.osmdroid.views.overlay.OverlayItem;
 
 import java.util.ArrayList;
 
+// test
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
 
