@@ -1,51 +1,46 @@
 package com.example.a2geyog68.mappingapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.content.Intent;
-import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
 
-
-import java.nio.BufferUnderflowException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
-    MapView mv;
 
+    MapView mv;
+    ItemizedIconOverlay<OverlayItem> items;
 
     @Override
 
 
     /**this is called when the main activity is first created*/
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        /**this is for the location manager */
-        LocationManager mgr= (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
-// if you want to test indoors change gps_provider to network_provider (everything in caps)
-
-        /**this is for the preference menu*/
-        Configuration.getInstance().load
-                (this,PreferenceManager.getDefaultSharedPreferences (this));
+        //this line sets the user agent, a requerment to download osm maps
+        Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
 
         /**this is for the map view*/
+        setContentView(R.layout.activity_main);
+
         setContentView(R.layout.activity_main);
 
         mv = (MapView) findViewById(R.id.map1);
@@ -54,6 +49,28 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         mv.getController().setZoom(16);
 
         mv.getController().setCenter(new GeoPoint(51.05, -0.72));
+
+        //this is for the itemized layer - pinpointing the different locations on the map
+
+        items = new ItemizedIconOverlay<OverlayItem>(this, new ArrayList<OverlayItem>(), null);
+        OverlayItem uxbridge = new OverlayItem("Uxbridge", "Village in greater london", new GeoPoint(51.5447, -0.4746));
+        OverlayItem london = new OverlayItem("London", "central London", new GeoPoint(51.4960, -0.1439));
+        items.addItem(uxbridge);
+        items.addItem(london);
+        mv.getOverlays().add(items);
+
+
+        /**this is for the location manager */
+        LocationManager mgr= (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
+                // if you want to test indoors change gps_provider to network_provider (everything in caps)
+
+        /**this is for the preference menu*/
+        Configuration.getInstance().load
+                (this,PreferenceManager.getDefaultSharedPreferences (this));
+
+
+
     }
 
 
