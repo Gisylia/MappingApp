@@ -6,6 +6,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -21,6 +22,7 @@ import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -79,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         String line;
         BufferedReader reader = null;
         try {
+            String filepath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/poi.txt";
+            File file = new File(filepath);
             reader = new BufferedReader(new FileReader("poi.txt"));
 
             while ((line = reader.readLine()) != null)
@@ -94,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                         double lat = Double.parseDouble(components[4]);
                         double lon = Double.parseDouble(components[3]);
-                        OverlayItem overlayItem = new OverlayItem(components[0], components[2], new GeoPoint(lat, lon));
+                        OverlayItem overlayItem = new OverlayItem(components[0], components[2], new GeoPoint(lon, lat));
                         items.addItem(overlayItem);
 
 
