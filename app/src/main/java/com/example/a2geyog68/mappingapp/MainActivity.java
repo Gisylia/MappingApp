@@ -93,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 if (components.length == 5)
                 {
                     try {
-                        double lat = Double.parseDouble(components[4]);
-                        double lon = Double.parseDouble(components[3]);
+                        double lon = Double.parseDouble(components[4]);
+                        double lat = Double.parseDouble(components[3]);
                         OverlayItem overlayItem = new OverlayItem(components[0], components[2], new GeoPoint(lon, lat));
                         items.addItem(overlayItem);
 
