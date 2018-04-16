@@ -19,6 +19,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.OverlayItem;
 
 import java.io.BufferedReader;
@@ -50,12 +51,37 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         setContentView(R.layout.activity_main);
 
 
+        /**this is for the location manager */
+        LocationManager mgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        // if you want to test indoors change gps_provider to network_provider (everything in caps)
+
+        // this is the maps setting
         mv = (MapView) findViewById(R.id.map1);
 
         mv.setBuiltInZoomControls(true);
         mv.getController().setZoom(16);
 
         mv.getController().setCenter(new GeoPoint(51.05, -0.72));
+
+        ItemizedIconOverlay<OverlayItem> items;
+        ItemizedIconOverlay.OnItemGestureListener<OverlayItem> markerGestureListener;
+
+
+
+        // this is to listen for actions done to the markers on the map
+
+        markerGestureListener = new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+            public boolean onItemLongPress(int i, OverlayItem item) {
+                Toast.makeText(MainActivity.this, item.getSnippet(), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            public boolean onItemSingleTapUp(int i, OverlayItem item) {
+                Toast.makeText(MainActivity.this, item.getSnippet(), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        };
+
 
         //this is for the itemized layer - pinpointing the different locations on the map
 
@@ -65,12 +91,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         items.addItem(uxbridge);
         items.addItem(london);
         mv.getOverlays().add(items);
-
-
-        /**this is for the location manager */
-        LocationManager mgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        // if you want to test indoors change gps_provider to network_provider (everything in caps)
 
         /**this is for the preference menu*/
         Configuration.getInstance().load
@@ -86,12 +106,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             System.out.println();
             reader = new BufferedReader(new FileReader(filepath));
 
-            while ((line = reader.readLine()) != null)
-            {
+            while ((line = reader.readLine()) != null) {
                 // this will split the array list.
                 String[] components = line.split(",");
-                if (components.length == 5)
-                {
+                if (components.length == 5) {
                     try {
                         double lon = Double.parseDouble(components[4]);
                         double lat = Double.parseDouble(components[3]);
